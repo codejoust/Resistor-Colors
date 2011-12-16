@@ -68,7 +68,7 @@ get /^\/([0-9]+)(\.[0-9]+)?(k|m|K|M)?(.*)/ do
   @colors = num_2_color(num)
   dec = calc_dec(num)
   #@num = num#"#{dec[1]}#{dec[2]} x 10^#{dec[0]}"
-  @num = num.to_s.sub('000000','m').sub('000', 'k')
+  @num = ((dec[1] + (dec[2] * 0.1)) * 10**dec[0]).to_i.to_s.sub(/000000$/,'m').sub(/000$/, 'k')
   if @num != request.path_info[1..-1]
     redirect '/' + @num
     return
@@ -85,7 +85,7 @@ end
 
 def num_2_color(num_in)
   dec, digit1, digit2 = calc_dec(num_in)
-  [COLOR_VALS[digit1], COLOR_VALS[digit2], MULTIS[dec]]
+  [COLOR_VALS[digit1], COLOR_VALS[digit2], MULTIS[dec] || 'Invalid!']
 end
 
 def calc_dec(num_in)
