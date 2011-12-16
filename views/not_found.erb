@@ -1,0 +1,12 @@
+<h2>Ouch! I can't find the page you're looking for.</h2>
+<p>Either you typed a bad value or you're trying to trick me.</p>
+<img src="/resistor-man<%= 1 + rand(3); %>.jpg" id="rman" />
+<script>
+    var rman = document.getElementById('rman'),
+        count = 3, index = 1;
+    setInterval(function(){
+      rman.src = '/resistor-man' + index + '.jpg';
+      if (index == count){ index = 1 }
+      else { index++ };
+    }, 2500);
+</script>

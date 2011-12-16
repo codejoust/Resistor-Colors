@@ -4,9 +4,9 @@ require 'json'
 
 $hostname = 'resistor.heroku.com'
 
-COLORS = {'black'=> 0, 'brown'=> 1, 'red'=> 2, 'orange'=> 3, 'yellow'=> 4, 'green'=> 5, 'blue'=> 6, 'violet'=> 7, 'grey'=> 8, 'white'=> 9}
+COLORS = {'black'=> 0, 'brown'=> 1, 'red'=> 2, 'orange'=> 3, 'yellow'=> 4, 'green'=> 5, 'blue'=> 6, 'purple'=>7, 'violet'=> 7, 'grey'=> 8, 'white'=> 9}
 COLOR_VALS = {}
-MULTIPLIERS = {'silver'=> 0.01, 'gold'=> 0.1, 'black'=> 1, 'brown'=> 10, 'red'=> 100, 'orange'=> 1000, 'yellow'=> 10000, 'green'=> 100000, 'blue'=> 1000000, 'violet'=> 10000000}
+MULTIPLIERS = {'silver'=> -2, 'gold'=> -1, 'black'=> 0, 'brown'=> 1, 'red'=> 2, 'orange'=> 3, 'yellow'=> 4, 'green'=> 5, 'blue'=> 6, 'violet'=> 7}
 MULTIS = {-2 => 'silver', -1 => 'gold', 0 => 'black', 1=> 'brown', 2=> 'red', 3=> 'orange', 4=>'yellow', 5=>'green', 6=>'blue', 7=>'violet'}
 
 COLORS.each_pair do |k,v|
@@ -33,10 +33,10 @@ end
 get '/common/more' do
   @common = []
   @more = true
-  (0..900).step(10) do |num|
+  (10..900).step(10) do |num|
     @common.push([num, num_2_color(num)])
   end
-  (0..10).each do |num|
+  (1..10).each do |num|
     @common.push([num.to_s + 'k', num_2_color(num * 1000)])
     @common.push([num.to_s + 'm', num_2_color(num * 1000000)])
   end
@@ -44,10 +44,6 @@ get '/common/more' do
   erb :list_codes
 end
 
-get '/color/:color' do |color|
-  colors = color.split(/^[A-Za-z]+/)
-  colors.inspect
-end
 
 get '/get_resistor' do
   input = params[:resistor_val]
@@ -59,14 +55,24 @@ get '/get_resistor' do
   end
 end
 
+get '/get_color' do
+  input = params[:color_val]
+  if input.match(/^([A-Za-z]+)(?: |,|\||\-)([A-Za-z]+)(?: |,|\||\-)([A-Za-z]+)$/)
+    redirect '/' + input
+  else
+    @color = input
+    erb :index
+  end
+end
+
 get /^\/([0-9]+)(\.[0-9]+)?(k|m|K|M)?(.*)/ do 
   url_h = params[:captures]
   num = url_h[0].to_i
   num += url_h[1].to_f unless url_h[1].nil?
   num *= 1000 if (url_h[2] and url_h[2].downcase == 'k')
   num *= 1000000 if (url_h[2] and url_h[2].downcase == 'm')
-  @colors = num_2_color(num)
   dec = calc_dec(num)
+  @colors = val_2_color(*dec)
   #@num = num#"#{dec[1]}#{dec[2]} x 10^#{dec[0]}"
   @num = ((dec[1] + (dec[2] * 0.1)) * 10**dec[0]).to_i.to_s.sub(/000000$/,'m').sub(/000$/, 'k')
   if @num != request.path_info[1..-1]
@@ -83,8 +89,24 @@ get /^\/([0-9]+)(\.[0-9]+)?(k|m|K|M)?(.*)/ do
   #return "finding resistor #{num}, #{url_h.inspect}, #{num_2_color(num).inspect}"
 end
 
-def num_2_color(num_in)
-  dec, digit1, digit2 = calc_dec(num_in)
+get /^\/([A-Za-z]+)(?: |,|\||\-)([A-Za-z]+)(?: |,|\||\-)([A-Za-z]+)$/ do
+  colors = params[:captures]
+  num1, num2, multi = COLORS[colors[0]], COLORS[colors[1]], MULTIPLIERS[colors[2]]
+  if (num1 && num2 && multi)
+    @colors = [colors[0], colors[1], colors[2]]
+    @num = ((num1 + (num2 * 0.1)) * 10**multi).to_i.to_s.sub(/000000$/,'m').sub(/000$/, 'k')
+    erb :resistor
+  else
+    raise Sinatra::NotFound
+    "Invalid Colors"
+  end
+end
+
+def num_2_color(num)
+  val_2_color(*calc_dec(num))
+end
+
+def val_2_color(dec, digit1, digit2)
   [COLOR_VALS[digit1], COLOR_VALS[digit2], MULTIS[dec] || 'Invalid!']
 end
 
@@ -93,6 +115,6 @@ def calc_dec(num_in)
   return [out[3].to_i, out[1].to_i, out[2].to_i]
 end
 
-post '/' do
-  
+not_found do
+  erb :not_found
 end
