@@ -1,0 +1,11 @@
+<h1>Resistor Color Code</h1>
+<h3>for <%= @num %> Ω (<%= @colors.join(' ') %>)</h3>
+
+<div class="contain">
+<img src="resistor.png" />
+<div id="behind-img">
+  <div class="ring1" style='background-color: <%= @colors[0] %>'></div>
+  <div class="ring2" style='background-color: <%= @colors[1] %>'></div>
+  <div class="ring3" style='background-color: <%= @colors[2] %>'></div>
+</div>
+</div>

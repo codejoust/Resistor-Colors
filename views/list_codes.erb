@@ -1,0 +1,11 @@
+<h2>Common Resistor Values and Colors:</h2>
+<div class="com">
+<% @common.each do |val| %>
+  <a class="r" href='/<%= val[0] %>'><%= val[0] %> - <span class="c"><%= val[1].join(' ') %></a>
+<% end %>
+</div>
+<% if @more %>
+<p><a href="/common">more common values...</a></p>
+<% else %>
+<p><a href="/common/more">more values...</a></p>
+<% end %>

@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<head>
+<title>Resistor Color Code Finder<% if @title %> - <%= @title %><% end %></title>
+<style>
+  body { font-family: georgia; text-align: center; }
+  .contain { position:relative; width: 400px; height:120px; margin: 0 auto; margin-top:5%; }
+  .contain img { position: absolute; top:0; left: 0; width:400px; height: 120px; z-index:30; }
+  .contain #behind-img {  }
+  .contain #behind-img div { position: absolute; width: 20px; height: 78px; top: 21px; }
+  #behind-img div.ring1 { left: 148px; }
+  #behind-img div.ring2 { left: 178px; }
+  #behind-img div.ring3 { left: 205px; }
+  h1, h3 { margin: 0 auto; font-family: georgia; text-align:center; padding-top:5%; }
+  form.main { font-size: 1.4em; padding: 12px; margin-top: 25px;  }
+  a { color: #333; }
+  a:hover { color:#888; }
+  h1 { margin-top: 10%; }
+  p.footer { margin-top: 30%; }
+  a.r { display: inline-block; padding: 8px; width: 200px; }
+  div.com { width: 660px; margin: 0 auto; }
+  div.com a { text-align: left; }
+</style>
+</head>
+<body>
+  <%= yield %>
+</body>
+</html>
