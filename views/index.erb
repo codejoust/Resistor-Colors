@@ -1,10 +1,30 @@
 <h1>Find a resistor color code:</h1>
+<p>Resistor color bands can be hard to decipher - this utility helps sort it out for you.</p>
+<p>Simply type in the resistor value you're searching for or the colors of the resistor and find the missing values.</p>
 
 <form class="main" action="/get_resistor"><%= $hostname %>/<input placeholder="resistor value" name="resistor_val" value="<%= h(@query) %>" />Ω -> <a href="/2k"><%= $hostname %>/2k</a></form>
 
 <!-- side note- this supports json-  just add .json to the end of the url -->
 
 <form class="main" action="/get_color"><%= $hostname %>/<input name="color_val" placeholder="resistor color (seperated by ,)" /> -> <a href="/green-blue-red"><%= $hostname %>/green-blue-red</a></form>
+
+<form class="main" action="/partial_color">
+  <% [1,2].each do |cnum| %>
+    <select name="color<%= cnum %>">
+      <% for color, val in COLORS %>
+        <option value="<%= color %>" style="background-color: <%= color %>"><%= color %></option>
+      <% end %>
+    </select>
+  <% end %>
+  <select name="multiplier">
+    <% for multiplier, val in MULTIPLIERS %>
+      <option value="<%= multiplier %>" style="background-color: <%= multiplier %>" ><%= multiplier %></option>
+    <% end %>
+  </select>
+  <input type="submit" value="Go!" />
+</form>
+
+
 
 <p><a href='/common'>see common resistor values</a></p>
 

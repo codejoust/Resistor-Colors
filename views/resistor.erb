@@ -1,6 +1,10 @@
 <h1>Resistor Color Code</h1>
 <h3>for <%= @num %> Ω (<%= @colors.join(' ') %>)</h3>
 
+<% if @num == 1 %>
+  <h3 class="warn">May be inaccurate... only accurate above 1ohm.</h3>
+<% end %>
+
 <div class="contain">
 <img src="/resistor.png" alt="Resistor Overlay Image" />
 <div id="behind-img">

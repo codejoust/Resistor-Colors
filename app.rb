@@ -1,17 +1,10 @@
 require 'rubygems'
 require 'sinatra'
 require 'json'
+require './values.rb'
 
 $hostname = 'resistor.heroku.com'
 
-COLORS = {'black'=> 0, 'brown'=> 1, 'red'=> 2, 'orange'=> 3, 'yellow'=> 4, 'green'=> 5, 'blue'=> 6, 'purple'=>7, 'violet'=> 7, 'grey'=> 8, 'white'=> 9}
-COLOR_VALS = {}
-MULTIPLIERS = {'silver'=> -2, 'gold'=> -1, 'black'=> 0, 'brown'=> 1, 'red'=> 2, 'orange'=> 3, 'yellow'=> 4, 'green'=> 5, 'blue'=> 6, 'violet'=> 7}
-MULTIS = {-2 => 'silver', -1 => 'gold', 0 => 'black', 1=> 'brown', 2=> 'red', 3=> 'orange', 4=>'yellow', 5=>'green', 6=>'blue', 7=>'violet'}
-
-COLORS.each_pair do |k,v|
-  COLOR_VALS[v] = k
-end
 
 helpers do
   include Rack::Utils
@@ -65,6 +58,10 @@ get '/get_color' do
   end
 end
 
+get '/partial_color' do
+  redirect '/' + [params[:color1], params[:color2], params[:multiplier]].join('-')
+end
+
 get /^\/([0-9]+)(\.[0-9]+)?(k|m|K|M)?(.*)/ do 
   url_h = params[:captures]
   num = url_h[0].to_i
@@ -89,7 +86,7 @@ get /^\/([0-9]+)(\.[0-9]+)?(k|m|K|M)?(.*)/ do
   #return "finding resistor #{num}, #{url_h.inspect}, #{num_2_color(num).inspect}"
 end
 
-get /^\/([A-Za-z]+)(?: |,|\||\-)([A-Za-z]+)(?: |,|\||\-)([A-Za-z]+)$/ do
+get /^\/([A-Za-z]+)(?:\ |,|\||\-)([A-Za-z]+)(?:\ |,|\||\-)([A-Za-z]+)$/ do
   colors = params[:captures]
   num1, num2, multi = COLORS[colors[0]], COLORS[colors[1]], MULTIPLIERS[colors[2]]
   if (num1 && num2 && multi)
@@ -107,7 +104,7 @@ def num_2_color(num)
 end
 
 def val_2_color(dec, digit1, digit2)
-  [COLOR_VALS[digit1], COLOR_VALS[digit2], MULTIS[dec] || 'Invalid!']
+  [COLOR_VALS[digit1], COLOR_VALS[digit2], MULTIPLIER_VALS[dec - 1] || 'Invalid!']
 end
 
 def calc_dec(num_in)
